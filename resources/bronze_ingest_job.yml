@@ -1,0 +1,17 @@
+resources:
+  jobs:
+    bronze_ingest:
+      name: bronze_ingest
+      tasks:
+        - task_key: bronze_ingest_task
+          notebook_task:
+            notebook_path: ../pipelines/workspace_files/bronze_ingest.py
+            base_parameters:
+              catalog: dev
+              schema: bronze
+              source_root: /Volumes/dev/bronze/raw/data
+              source_format: csv
+              header: "true"
+              infer_schema: "true"
+      queue:
+        enabled: true

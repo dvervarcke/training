@@ -1,0 +1,16 @@
+bundle:
+  name: training
+
+include:
+  - resources/*.yml
+
+workspace:
+  root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+
+sync:
+  paths:
+    - pipelines/workspace_files
+
+targets:
+  dev:
+    default: true
