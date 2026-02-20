@@ -1,0 +1,38 @@
+name: Databricks CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - codex/dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Resolve target from branch
+        id: target
+        run: |
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            echo "bundle_target=prod" >> "$GITHUB_OUTPUT"
+          elif [ "${GITHUB_REF_NAME}" = "codex/dev" ]; then
+            echo "bundle_target=dev" >> "$GITHUB_OUTPUT"
+          else
+            echo "Unsupported branch: ${GITHUB_REF_NAME}" >&2
+            exit 1
+          fi
+
+      - name: Validate bundle
+        run: databricks bundle validate -t "${{ steps.target.outputs.bundle_target }}"
+
+      - name: Deploy bundle
+        run: databricks bundle deploy -t "${{ steps.target.outputs.bundle_target }}"

@@ -7,9 +7,9 @@ resources:
           notebook_task:
             notebook_path: ../pipelines/workspace_files/bronze_ingest.py
             base_parameters:
-              catalog: dev
-              schema: bronze
-              source_root: /Volumes/dev/bronze/raw/data
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              source_root: /Volumes/${var.catalog}/${var.schema}/raw/data
               source_format: csv
               header: "true"
               infer_schema: "true"

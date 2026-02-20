@@ -4,6 +4,14 @@ bundle:
 include:
   - resources/*.yml
 
+variables:
+  catalog:
+    description: Unity Catalog name for this deployment target
+    default: dev
+  schema:
+    description: Bronze schema name
+    default: bronze
+
 workspace:
   root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
 
@@ -14,3 +22,10 @@ sync:
 targets:
   dev:
     default: true
+    variables:
+      catalog: dev
+      schema: bronze
+  prod:
+    variables:
+      catalog: prod
+      schema: bronze
