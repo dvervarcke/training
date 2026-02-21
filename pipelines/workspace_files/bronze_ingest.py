@@ -34,11 +34,17 @@ def _discover_leaf_dirs(path: str) -> List[str]:
     return sorted(set(leaf_dirs))
 
 
-def _build_reader(source_format: str, infer_schema: str, header: str):
+def _build_reader(
+    source_format: str,
+    infer_schema: str,
+    header: str,
+    schema_location: str,
+):
     reader = (
         spark.readStream.format("cloudFiles")
         .option("cloudFiles.format", source_format)
         .option("cloudFiles.inferColumnTypes", infer_schema)
+        .option("cloudFiles.schemaLocation", schema_location)
         .option("header", header)
     )
 
@@ -75,7 +81,13 @@ for input_path in leaf_dirs:
     full_table_name = f"{catalog}.{schema}.{table_name}"
     checkpoint_path = f"/Volumes/{catalog}/{schema}/checkpoints/{table_name}"
 
-    df: DataFrame = _build_reader(source_format, infer_schema, header).load(input_path)
+    schema_location = f"/Volumes/{catalog}/{schema}/checkpoints/{table_name}/schema"
+    df: DataFrame = _build_reader(
+        source_format,
+        infer_schema,
+        header,
+        schema_location,
+    ).load(input_path)
 
     query = (
         df.writeStream.format("delta")
